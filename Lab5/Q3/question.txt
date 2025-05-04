@@ -1,0 +1,283 @@
+//program to implement circular list
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+
+class List{
+    struct node{
+        int data;
+        struct node *next;
+    };
+    struct node *head;
+    public:
+        List(){
+            head=NULL;
+        }
+        void insertbeg(int);
+        void insertend(int);
+        void insertpos(int, int);
+        int delbeg();
+        int delend();
+        int delpos(int);
+        int search(int);
+        int listlen();
+        void display();
+
+}l1;
+
+int main()
+{
+    int choice,num,pos,val;
+    while(1)
+    {
+        cout << "\n1-Insert beginning\n2-Insert end\n3-Insert position\n4-Delete beginning\n5-Delete end\n6-Delete position\n7-Search\n8-Display\n9-Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch(choice){
+            case 1:
+                cout<<"Enter a number: ";
+                cin>>num;
+                l1.insertbeg(num);
+                break;
+            case 2:
+                cout<<"Enter a number: ";
+                cin>>num;
+                l1.insertend(num);
+                break;
+            case 3:
+                cout<< "Enter the number to be inserted: ";
+                cin>>num;
+                cout<<"Enter the position: ";
+                cin>>pos;
+                l1.insertpos(num,pos);
+                break;
+            case 4:
+                val=l1.delbeg();
+                if(val==0){
+                    cout<<"LIST IS EMPTY\n";
+                }
+                else{
+                    cout<<"The deleted element is " << val <<"\n";
+                }
+                break;
+            case 5:
+                val=l1.delend();
+                if(val==0){
+                    cout<<"LIST IS EMPTY\n";
+                }
+                else{
+                    cout<<"The deleted element is " << val <<"\n";
+                }
+                break;
+            case 6:
+                cout<<"Enter the position: ";
+                cin>>pos;
+                val=l1.delpos(pos);
+                if(val==0){
+                    cout<<"LIST IS EMPTY\n";
+                }
+                else{
+                    cout<<"The deleted element is " << val <<"\n";
+                }
+                break;
+            case 7:
+                cout<<"Enter the element to be searched: ";
+                cin>>num;
+                pos=l1.search(num);
+                if(pos==-1){
+                    cout<<"The list is empty or the element does not exist\n";
+                }
+                else{
+                    cout<<"The position of the element is "<<pos<<"\n";
+                }
+                break;
+            case 8:
+                l1.display();
+                break;
+            case 9:
+                exit(0);
+            default:
+                cout<<"Enter a valid choice\n";
+        }
+    }
+    return 0;
+}
+
+//To insert at the beginning
+void List::insertbeg(int num)
+{
+    struct node *newnode=(struct node*)malloc(sizeof(struct node));
+    newnode->data=num;
+    if(head==NULL){
+        head=newnode;
+        newnode->next=newnode;   
+    }else{
+        struct node *temp=head;
+        while(temp->next!=head)
+        {
+            temp=temp->next;
+        }
+        temp->next=newnode;
+        newnode->next=head;
+        head=newnode;    
+        
+    }
+}
+
+//To insert at the end
+void List::insertend(int num)
+{
+    struct node *newnode=(struct node*)malloc(sizeof(struct node));
+    newnode->data=num;
+    if(head==NULL){l1.insertbeg(num);}
+    else{
+        struct node *temp=head;
+        while(temp->next!=head)
+        {
+            temp=temp->next;
+        }
+        temp->next=newnode;
+        newnode->next=head;
+    }
+}
+
+//To insert at a position
+void List::insertpos(int num,int pos)
+{
+    if(pos==1){
+        l1.insertbeg(num);
+    }
+    else{
+        struct node *newnode=(struct node*)malloc(sizeof(struct node));
+        struct node *temp=head;
+        for (int i=1; temp && i<pos-1; i++) {
+            temp = temp->next;
+            if (temp==head) break;
+        }
+        if(temp){
+            newnode->data=num;
+            newnode->next = temp->next;
+            temp->next = newnode;
+        } 
+        else{
+            cout << "Position out of bounds" << endl;}
+    }
+}
+
+//To delete at the beginning
+int List::delbeg()
+{
+    if(head==NULL){
+        return 0;
+    }
+    int val;
+    struct node *temp=head;
+    val=temp->data;
+    if(temp->next==NULL)
+    {
+        free(head);
+        head=NULL;
+        return(val);
+    }
+    else{
+        while(temp->next!=head)
+        {
+            temp=temp->next;
+        }
+        head=head->next;
+        temp->next=head;
+        return(val);
+
+    }
+}
+
+//To delete at the end
+int List::delend()
+{
+    if(head==NULL){
+        return 0;
+    }
+    int val;
+    struct node *temp=head;
+    val=temp->data;
+    if(temp->next==head)
+    {
+        free(head);
+        head=NULL;
+        return(val);
+    }
+    else{
+        while(temp->next->next!=head)
+        {
+            temp=temp->next;
+        }
+        val=temp->next->data;
+        temp->next=head;
+        return(val);
+    }
+}
+
+//To delete at a position
+int List::delpos(int pos)
+{
+    if(head==nullptr){return 0;}
+    int val;
+    if(pos==1){
+        val=l1.delbeg();
+        return val;
+    }
+    else{
+        struct node *temp=head;
+        for(int i=1; temp && i<pos-1; i++){
+            temp=temp->next;
+            if (temp==head){break;}
+        }
+        if(temp && temp->next!=head) {
+            struct node *temp1=temp->next;
+            val=temp1->data;
+            temp->next=temp1->next;
+            delete temp1;
+            return(val);
+        }
+        else{
+            cout << "Position out of bounds" << endl;
+            return -1;
+        }
+    }
+}
+
+//To search for a given element in the list
+int List::search(int num)
+{
+    int count=0;
+    struct node *temp=head;
+    if(head==NULL){
+        return -1;
+    }
+    while(temp!=NULL)
+    {
+        if(temp->data==num){
+            return count;
+        }
+        temp=temp->next;
+        count++;
+    }
+    return -1;
+}
+
+
+//To display all elements
+void List::display()
+{
+    if (head == NULL) {
+        cout << "Head is empty\n";
+    } else {
+        struct node *temp = head;
+        cout << temp->data << " ";
+        temp = temp->next;
+        while (temp!=head){
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+    }
+}
